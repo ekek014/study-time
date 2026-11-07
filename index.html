@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Study Time">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Study Time — 通塾記録</title>
+<style>
+:root{color-scheme:light;--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#86868b;--line:#e8e8ed;--blue:#007aff;--green:#30a46c;--red:#ff453a;--shadow:0 8px 28px rgba(0,0,0,.045)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Hiragino Sans","Noto Sans JP",sans-serif;letter-spacing:-.02em}
+button,input{font:inherit}button{cursor:pointer;border:0}
+.wrap{max-width:760px;margin:auto;padding:28px 18px 52px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.brand{font-size:13px;color:var(--muted);font-weight:650;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:30px;letter-spacing:-.045em;margin:5px 0 0;font-weight:750}
+.today{font-size:13px;color:var(--muted);text-align:right}
+.card{background:var(--card);border-radius:22px;padding:21px;margin-bottom:14px;box-shadow:var(--shadow)}
+.status{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.eyebrow{font-size:12px;color:var(--muted);font-weight:600}
+.status strong{display:block;font-size:23px;margin-top:5px;letter-spacing:-.04em}
+.pill{font-size:12px;border-radius:99px;padding:7px 11px;background:#f1f1f4;color:var(--muted);white-space:nowrap}
+.pill.in{background:#e8f7ef;color:#16834d}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.action{border-radius:15px;padding:15px 10px;font-weight:700;font-size:15px;transition:.15s}
+.action:active{transform:scale(.98)}
+.action:disabled{opacity:.38;cursor:not-allowed}
+.enter{background:var(--blue);color:#fff}.leave{background:#e9f2ff;color:#0066d6}
+.hint{font-size:12px;color:var(--muted);margin:12px 2px 0;line-height:1.6}
+.section-title{font-size:17px;font-weight:720;margin:0 0 15px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#f7f7f9;border-radius:16px;padding:15px}
+.stat .label{font-size:12px;color:var(--muted)}
+.stat .value{font-size:25px;font-weight:750;margin-top:7px;letter-spacing:-.04em}
+.stat .sub{font-size:11px;color:var(--muted);margin-top:4px}
+.tabs{display:flex;gap:7px;background:#e9e9ed;padding:4px;border-radius:12px;margin-bottom:14px}
+.tab{flex:1;padding:9px 8px;border-radius:9px;background:transparent;color:#6e6e73;font-size:13px;font-weight:650}
+.tab.active{background:#fff;color:var(--text);box-shadow:0 1px 4px #00000012}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+select,.month-input{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;color:var(--text);font-size:13px}
+.chart{height:178px;display:flex;align-items:end;gap:7px;padding:12px 2px 0;border-bottom:1px solid var(--line);overflow:hidden}
+.bar-wrap{height:100%;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px}
+.bar{width:min(25px,75%);min-height:2px;background:linear-gradient(180deg,#54a8ff,#0878ef);border-radius:7px 7px 2px 2px}
+.bar-label{font-size:10px;color:var(--muted);white-space:nowrap}
+.chart-note{font-size:11px;color:var(--muted);margin-top:10px}
+.history-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.history-list{margin-top:5px}
+.entry{display:grid;grid-template-columns:1fr auto;gap:8px;padding:14px 0;border-bottom:1px solid var(--line)}
+.entry:last-child{border-bottom:0}
+.entry-date{font-weight:650;font-size:14px}
+.entry-times{font-size:12px;color:var(--muted);margin-top:5px}
+.entry-duration{text-align:right;font-size:14px;font-weight:700}
+.entry-tools{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}
+.small{font-size:11px;background:#f2f2f5;color:#555;border-radius:8px;padding:6px 9px}
+.empty{text-align:center;padding:28px 8px;color:var(--muted);font-size:13px;line-height:1.7}
+.footer{font-size:11px;color:var(--muted);text-align:center;margin-top:22px;line-height:1.7}
+.modal-back{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}
+.modal-back.show{display:flex}.modal{width:min(420px,100%);background:#fff;border-radius:22px;padding:22px;box-shadow:0 18px 60px #0003}
+.modal h2{font-size:19px;margin:0 0 15px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:12px;color:var(--muted)}.field input{padding:11px;border:1px solid var(--line);border-radius:11px;width:100%}
+.modal-actions{display:flex;gap:8px;margin-top:18px}.modal-actions button{flex:1;padding:12px;border-radius:12px;font-weight:650}.save{background:var(--blue);color:#fff}.cancel{background:#f1f1f4}
+.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#242426;color:white;padding:11px 16px;border-radius:99px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:8}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:620px){.wrap{padding-top:42px}.stats{grid-template-columns:repeat(4,1fr)}.stat .value{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div><div class="brand">STUDY TIME</div><h1>通塾記録</h1></div>
+ <div class="today" id="today"></div>
+</header>
+<section class="card">
+ <div class="status">
+  <div><div class="eyebrow">現在のステータス</div><strong id="statusText">未入塾</strong></div>
+  <span class="pill" id="statusPill">待機中</span>
+ </div>
+ <div class="actions">
+  <button class="action enter" id="checkIn">↗　入塾する</button>
+  <button class="action leave" id="checkOut" disabled>↙　退塾する</button>
+ </div>
+ <p class="hint" id="statusHint">入塾時にボタンを押すと、時刻の記録が始まります。</p>
+</section>
+<section class="card">
+ <h2 class="section-title">今月のサマリー</h2>
+ <div class="stats">
+  <div class="stat"><div class="label">総滞在時間</div><div class="value" id="monthHours">0時間</div><div class="sub" id="monthMinutes">0分</div></div>
+  <div class="stat"><div class="label">通塾日数</div><div class="value" id="monthDays">0日</div><div class="sub">記録のある日</div></div>
+  <div class="stat"><div class="label">今年の総滞在時間</div><div class="value" id="yearHours">0時間</div><div class="sub" id="yearMinutes">0分</div></div>
+  <div class="stat"><div class="label">今年の通塾日数</div><div class="value" id="yearDays">0日</div><div class="sub">記録のある日</div></div>
+ </div>
+</section>
+<section class="card">
+ <div class="chart-head"><h2 class="section-title" style="margin:0">滞在時間グラフ</h2><select id="chartMode"><option value="daily">日別</option><option value="monthly">月別</option></select></div>
+ <div class="chart" id="chart"></div><div class="chart-note" id="chartNote">今月の日別滞在時間（時間）</div>
+</section>
+<section class="card">
+ <div class="history-head"><h2 class="section-title" style="margin:0">通塾履歴</h2><input class="month-input" type="month" id="historyMonth"></div>
+ <div class="history-list" id="history"></div>
+</section>
+<section style="display:flex;gap:9px">
+ <button class="small" id="exportBtn">↓ CSVを書き出す</button>
+ <button class="small" id="helpBtn">使い方</button>
+</section>
+<p class="footer">記録はこのブラウザ内に保存されます。<br>ブラウザのデータ削除・端末変更時に備えて、定期的なCSV保存をおすすめします。</p>
+</div>
+<div class="modal-back" id="modalBack"><div class="modal">
+ <h2 id="modalTitle">記録を編集</h2>
+ <div class="field"><label>入塾日時</label><input type="datetime-local" id="editIn"></div>
+ <div class="field"><label>退塾日時</label><input type="datetime-local" id="editOut"></div>
+ <div class="modal-actions"><button class="cancel" id="cancelEdit">キャンセル</button><button class="save" id="saveEdit">保存</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY='study-time-records-v1';
+let records=load(), editingId=null;
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(records));render()}
+function nowISO(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
+function dateOf(s){return new Date(s)}
+function mins(r){if(!r.out)return 0;return Math.max(0,Math.round((dateOf(r.out)-dateOf(r.in))/60000))}
+function fmtDuration(m){return `${Math.floor(m/60)}時間${m%60?` ${m%60}分`:''}`}
+function fmtTime(s){return dateOf(s).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}
+function fmtDate(s){return dateOf(s).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'})}
+function toast(t){let el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2100)}
+function active(){return records.find(r=>!r.out)}
+function totals(list){return list.reduce((a,r)=>a+mins(r),0)}
+function uniqueDays(list){return new Set(list.map(r=>r.in.slice(0,10))).size}
+function setText(id,t){document.getElementById(id).textContent=t}
+function render(){
+ const a=active(),today=new Date();
+ setText('today',today.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'}));
+ setText('statusText',a?'入塾中':'未入塾');
+ const pill=document.getElementById('statusPill');pill.textContent=a?'計測中':'待機中';pill.className='pill'+(a?' in':'');
+ document.getElementById('checkIn').disabled=!!a;document.getElementById('checkOut').disabled=!a;
+ setText('statusHint',a?`入塾時刻：${fmtDate(a.in)} ${fmtTime(a.in)}。退塾時にボタンを押してください。`:'入塾時にボタンを押すと、時刻の記録が始まります。');
+ const ym=today.toISOString().slice(0,7),yr=String(today.getFullYear());
+ const mlist=records.filter(r=>r.in.slice(0,7)===ym),ylist=records.filter(r=>r.in.slice(0,4)===yr);
+ const mm=totals(mlist),yy=totals(ylist);
+ setText('monthHours',`${Math.floor(mm/60)}時間`);setText('monthMinutes',`${mm%60}分`);
+ setText('monthDays',`${uniqueDays(mlist)}日`);setText('yearHours',`${Math.floor(yy/60)}時間`);setText('yearMinutes',`${yy%60}分`);setText('yearDays',`${uniqueDays(ylist)}日`);
+ renderChart();renderHistory();
+}
+function renderChart(){
+ const mode=document.getElementById('chartMode').value,now=new Date(),data=[];
+ if(mode==='daily'){
+  const ym=now.toISOString().slice(0,7),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  for(let d=1;d<=days;d++){let key=ym+'-'+String(d).padStart(2,'0');data.push({label:String(d),value:totals(records.filter(r=>r.in.slice(0,10)===key))})}
+  setText('chartNote','今月の日別滞在時間（時間）');
+ }else{
+  for(let m=1;m<=12;m++){let key=String(now.getFullYear())+'-'+String(m).padStart(2,'0');data.push({label:m+'月',value:totals(records.filter(r=>r.in.slice(0,7)===key))})}
+  setText('chartNote','今年の月別滞在時間（時間）');
+ }
+ const max=Math.max(60,...data.map(x=>x.value));const shown=mode==='daily'?data.filter((x,i)=>i%2===0||i===data.length-1):data;
+ document.getElementById('chart').innerHTML=shown.map(x=>`<div class="bar-wrap" title="${x.label}: ${fmtDuration(x.value)}"><div class="bar" style="height:${Math.max(x.value?3:1,x.value/max*100)}%"></div><div class="bar-label">${x.label}</div></div>`).join('');
+}
+function renderHistory(){
+ const month=document.getElementById('historyMonth').value;
+ const list=records.filter(r=>!month||r.in.slice(0,7)===month).sort((a,b)=>b.in.localeCompare(a.in));
+ const el=document.getElementById('history');
+ if(!list.length){el.innerHTML='<div class="empty">この月の記録はまだありません。<br>入塾ボタンから記録を始めましょう。</div>';return}
+ el.innerHTML=list.map(r=>`<div class="entry"><div><div class="entry-date">${fmtDate(r.in)}</div><div class="entry-times">${fmtTime(r.in)} → ${r.out?fmtTime(r.out):'退塾待ち'}</div></div><div><div class="entry-duration">${r.out?fmtDuration(mins(r)):'計測中'}</div><div class="entry-tools"><button class="small" data-edit="${r.id}">編集</button><button class="small" data-delete="${r.id}">削除</button></div></div></div>`).join('');
+}
+document.getElementById('checkIn').onclick=()=>{if(active())return;records.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),in:nowISO(),out:null});persist();toast('入塾時刻を記録しました')};
+document.getElementById('checkOut').onclick=()=>{let a=active();if(!a)return;a.out=nowISO();persist();toast('退塾時刻を記録しました')};
+document.getElementById('chartMode').onchange=renderChart;
+document.getElementById('historyMonth').onchange=renderHistory;
+document.getElementById('history').onclick=e=>{
+ const ed=e.target.dataset.edit,del=e.target.dataset.delete;
+ if(ed){editingId=ed;let r=records.find(x=>x.id===ed);document.getElementById('editIn').value=r.in;document.getElementById('editOut').value=r.out||'';document.getElementById('modalBack').classList.add('show')}
+ if(del&&confirm('この記録を削除しますか？')){records=records.filter(x=>x.id!==del);persist();toast('記録を削除しました')}
+};
+document.getElementById('cancelEdit').onclick=()=>document.getElementById('modalBack').classList.remove('show');
+document.getElementById('saveEdit').onclick=()=>{
+ let r=records.find(x=>x.id===editingId),i=document.getElementById('editIn').value,o=document.getElementById('editOut').value;
+ if(!r||!i||(o&&new Date(o)<new Date(i))){toast('日時を確認してください');return}
+ if(o&&records.some(x=>x.id!==r.id&&!x.out)){toast('別の入塾中の記録があります');return}
+ r.in=i;r.out=o||null;document.getElementById('modalBack').classList.remove('show');persist();toast('記録を更新しました')
+};
+document.getElementById('exportBtn').onclick=()=>{
+ const rows=[['日付','入塾日時','退塾日時','滞在時間(分)'],...records.slice().sort((a,b)=>a.in.localeCompare(b.in)).map(r=>[r.in.slice(0,10),r.in,r.out||'',r.out?mins(r):''])];
+ const csv='\uFEFF'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='通塾記録.csv';a.click();URL.revokeObjectURL(url);toast('CSVを書き出しました')
+};
+document.getElementById('helpBtn').onclick=()=>alert('【使い方】\n1. 塾に着いたら「入塾する」を押します。\n2. 帰るときに「退塾する」を押します。\n3. 集計・グラフ・履歴は自動更新されます。\n4. 記録の修正や削除は履歴のボタンから行えます。\n\n記録は現在のブラウザ内に保存されます。端末変更やブラウザデータ削除に備えてCSVを書き出してください。');
+document.getElementById('historyMonth').value=new Date().toISOString().slice(0,7);
+render();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
